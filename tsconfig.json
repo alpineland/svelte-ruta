@@ -1,0 +1,11 @@
+{
+  "extends": "@ydcjeff/tsconfig/tsconfig.json",
+  "include": ["./src/**/*.js", "./src/**/*.ts", "./src/**/*.svelte"],
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "types": ["vite/client", "svelte"],
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  }
+}
