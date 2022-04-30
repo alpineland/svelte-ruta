@@ -1,6 +1,6 @@
 <script>
   import { getContext, setContext } from 'svelte';
-  import { internal_route } from './route';
+  import { internal_route } from './router';
 
   export let name = 'default';
 
