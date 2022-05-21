@@ -1,10 +1,10 @@
 <script>
-  import { RouterLink, RouterView } from './lib/mod';
+  import { RouterView } from './lib';
 </script>
 
 <main>
-  <RouterLink to="/">Home</RouterLink>
-  <RouterLink to="/about">About</RouterLink>
-  <RouterLink to="/123">Dynamic 123</RouterLink>
+  <a href="/">Home</a>
+  <a href="/about">About</a>
+  <a href="/123">Dynamic 123</a>
   <RouterView />
 </main>

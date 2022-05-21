@@ -1,13 +1,12 @@
 import 'urlpattern-polyfill';
-import type { Route, RouteRecord } from './types';
 
-export function createMatchFn(routes: RouteRecord[]) {
+export function createMatchFn(routes) {
   const proutes = routes.map(({ pathname, ...rest }) => ({
     ...rest,
     pattern: new URLPattern({ pathname }),
   }));
 
-  return (url: string): Route => {
+  return (url) => {
     for (const { pattern, ...rest } of proutes) {
       const temp = pattern.exec(url);
       if (temp) {
