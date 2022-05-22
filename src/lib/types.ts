@@ -1,16 +1,46 @@
 import type { SvelteComponent } from 'svelte';
 
-export interface RouteMeta extends Record<string | number | symbol, unknown> {}
+/**
+ * Options to pass when initialising router.
+ * @public
+ */
+export interface RouterOptions {
+  /**
+   * List of routes to be added to the router.
+   */
+  routes: RouteRecord[];
+  /**
+   * Optional base.
+   *
+   * @default /
+   */
+  base?: string;
+  /**
+   * Use hash mode.
+   *
+   * @default false
+   */
+  hash?: boolean;
+  /**
+   * Custom scroll function for scroll behavior.
+   *
+   * @default undefined
+   */
+  scroll?: (from, to) => boolean;
+}
+
 export type RouteRecord = RouteSingleView | RouteMultiView;
 
 type Lazy<T> = () => Promise<{ default: T }>;
-type RouteComponent = typeof SvelteComponent | Lazy<typeof SvelteComponent>;
+export type RouteComponent =
+  | typeof SvelteComponent
+  | Lazy<typeof SvelteComponent>;
 
 interface RouteRecordBase {
   pathname: string;
   children?: RouteRecord[];
-  meta?: RouteMeta;
-  redirectFrom?: string;
+  meta?: Record<string | number | symbol, unknown>;
+  redirect_from?: string;
 }
 
 /**

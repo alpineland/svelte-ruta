@@ -1,15 +1,15 @@
 import { DEV } from './constants.js';
-import { navigate } from './router.js';
+import { get_router } from './router.js';
 import { warn } from './utils.js';
 
 /**
  * @param {HTMLAnchorElement} node
- * @param {{ replace: boolean }} params
+ * @param {boolean} [replace] `false`
  */
-export function link(node, params) {
-  const { replace } = params;
-  const href = node.href;
+export function link(node, replace) {
+  const href = node.getAttribute('href');
   const target = node.target;
+  const router = get_router();
 
   if (DEV && !href) {
     warn(`"href" should be defined, not ${href}.`);
@@ -25,12 +25,12 @@ export function link(node, params) {
       e.button !== 0 || // only trigger left button click
       e.defaultPrevented || // don't trigger when defaultPrevented called
       /\b_blank\b/.test(target) || // don't trigger if target="_blank"
-      /^(?:\/|\.\.?\/)/.test(href) // only trigger if internal links
+      !/^(?:\/|\.\.?\/)/.test(/** @type {string} */ (href)) // only trigger for internal links
     )
       return;
 
     e.preventDefault();
-    navigate(href, replace);
+    router.navigate(/** @type {string} */ (href), replace);
   };
 
   node.addEventListener('click', onclick);

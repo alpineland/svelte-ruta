@@ -1,16 +1,19 @@
 <script>
-  import { getContext, setContext } from 'svelte';
   import { internal_route } from './router.js';
+  import { getContext, setContext } from 'svelte';
 
   export let name = 'default';
-  export let route = internal_route;
 
-  const depth_key = Symbol();
+  const DEPTH_KEY = Symbol();
 
   /** @type {number} */
-  const depth = getContext(depth_key) || 0;
+  const depth = getContext(DEPTH_KEY) || 0;
 
-  setContext(depth_key, depth + 1);
+  $: component = $internal_route.matched[depth].components[name];
+
+  setContext(DEPTH_KEY, depth + 1);
 </script>
 
-<svelte:component this={component} />
+{#await component() then c}
+  <svelte:component this={c.default} />
+{/await}
