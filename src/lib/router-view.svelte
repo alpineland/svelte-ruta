@@ -1,19 +1,26 @@
+<script context="module">
+  const DEPTH_KEY = Symbol();
+</script>
+
 <script>
   import { internal_route } from './router.js';
   import { getContext, setContext } from 'svelte';
 
-  export let name = 'default';
-
-  const DEPTH_KEY = Symbol();
-
   /** @type {number} */
   const depth = getContext(DEPTH_KEY) || 0;
-
-  $: component = $internal_route.matched[depth].components[name];
 
   setContext(DEPTH_KEY, depth + 1);
 </script>
 
-{#await component() then c}
+<!-- render default slot -->
+{#await $internal_route.matched[depth].components['default']() then c}
   <svelte:component this={c.default} />
 {/await}
+
+{#each Object.keys($$slots) as name (name)}
+  {#if name !== 'default'}
+    {#await $internal_route.matched[depth].components[name]() then c}
+      <svelte:component this={c.default} slot={name} />
+    {/await}
+  {/if}
+{/each}

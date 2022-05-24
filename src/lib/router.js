@@ -1,7 +1,6 @@
 import { CLIENT } from './constants.js';
-import { make_history } from './history.js';
 import { Matcher } from './matcher.js';
-import { getContext } from 'svelte';
+import { normalize_base } from './utils.js';
 import { writable } from 'svelte/store';
 
 /**
@@ -16,14 +15,6 @@ import { writable } from 'svelte/store';
 
 export const ROUTER_KEY = Symbol();
 
-/**
- * Retrieve the router provided via context of the root component.
- * @returns {Router}
- */
-export function get_router() {
-  return getContext(ROUTER_KEY);
-}
-
 /** @type {import('svelte/store').Writable<Route>} */
 export const internal_route = writable();
 
@@ -34,17 +25,15 @@ export const internal_route = writable();
 export const route = { subscribe: internal_route.subscribe };
 
 export class Router {
-  /** @type {import('./history.js').HistoryWrapper | null} */
-  #history;
-
+  #base;
   #matcher;
-
   #scroll;
 
   /** @param {import('./types').RouterOptions} options */
   constructor(options) {
-    const { base = '/', hash = false, routes, scroll } = options;
-    this.#history = CLIENT ? make_history(base, hash) : null;
+    const { base, hash = false, routes, scroll } = options;
+
+    this.#base = normalize_base(base);
     this.#matcher = new Matcher(routes);
     this.#scroll = scroll;
 
@@ -52,15 +41,8 @@ export class Router {
       addEventListener('click', (e) => {
         const anchor = /** @type {HTMLElement} */ (e.target).closest('a');
         if (anchor) {
-          const {
-            target,
-            relList,
-            pathname,
-            search,
-            hash,
-            protocol,
-            hostname,
-          } = anchor;
+          const { href, target, relList, pathname, protocol, hostname } =
+            anchor;
           if (
             // don't trigger on modifier keys
             !e.ctrlKey &&
@@ -83,15 +65,17 @@ export class Router {
           ) {
             e.preventDefault();
             if (location.pathname !== pathname) {
-              this.navigate(pathname + search + hash);
+              this.navigate(href);
             }
           }
         }
       });
 
-      const href = location.href.replace(location.origin, '');
-      this.navigate(href);
-      this.#history && this.#history.s(() => this.navigate(href));
+      addEventListener(hash ? 'hashchange' : 'popstate', () =>
+        this.navigate(location.href),
+      );
+
+      this.navigate(location.href);
     }
   }
 
@@ -100,11 +84,19 @@ export class Router {
    * @param {boolean} replace false
    */
   navigate(href, replace = false) {
-    const matched = this.#matcher.match(href);
+    const url = new URL(href, 'http://a.a' + this.#base);
+    href = url.pathname + url.search + url.hash;
+    const matched = this.#matcher.match(
+      href.replace(new RegExp('^' + this.#base), ''),
+    );
     internal_route.set(matched);
 
-    this.#history && this.#history.g(href, replace);
     if (CLIENT) {
+      if (replace) {
+        history.replaceState(null, '', href);
+      } else {
+        history.pushState(null, '', href);
+      }
       if (this.#scroll) this.#scroll();
       else scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
