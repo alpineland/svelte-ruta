@@ -1,19 +1,26 @@
 import { CLIENT } from './constants.js';
 import { Matcher } from './matcher.js';
 import { normalize_base } from './utils.js';
+import { getContext } from 'svelte';
 import { writable } from 'svelte/store';
 
 /**
  * @typedef {{
- *    pathname: string;
+ *    url: URL;
  *    params: Record<string, string | string[]>;
- *    search_params: URLSearchParams;
- *    hash: string;
  *    matched: import('./types').NormalizedRouteRecord[]
  * }} Route
  */
 
 export const ROUTER_KEY = Symbol();
+
+/**
+ * Retrieve the router provided via context of root component.
+ * @returns {Router} router
+ */
+export function get_router() {
+  return getContext(ROUTER_KEY);
+}
 
 /** @type {import('svelte/store').Writable<Route>} */
 export const internal_route = writable();

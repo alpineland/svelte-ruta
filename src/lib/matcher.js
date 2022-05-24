@@ -20,18 +20,15 @@ export class Matcher {
   match(url) {
     for (const proute of this.#proutes) {
       const res = proute.pattern.exec({ pathname: url });
-      const { pathname, searchParams, hash } = new URL(url, 'http://a.com');
       if (res) {
         return {
-          pathname,
+          url: new URL(url),
           params: Object.fromEntries(
             Object.entries(res.pathname.groups).map(([k, v]) => [
               k,
               v?.includes('/') ? v.split('/') : v,
             ]),
           ),
-          search_params: searchParams,
-          hash,
           matched: [proute],
         };
       }
