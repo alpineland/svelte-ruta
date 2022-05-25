@@ -1,5 +1,7 @@
 import type { SvelteComponent } from 'svelte';
 
+type Lazy<T> = () => Promise<{ default: T }>;
+
 /**
  * Options to pass when initialising router.
  * @public
@@ -12,7 +14,7 @@ export interface RouterOptions {
   /**
    * Optional base.
    *
-   * @default /
+   * @default undefined
    */
   base?: string;
   /**
@@ -31,7 +33,6 @@ export interface RouterOptions {
 
 export type RouteRecord = RouteSingleView | RouteMultiView;
 
-type Lazy<T> = () => Promise<{ default: T }>;
 export type RouteComponent =
   | typeof SvelteComponent
   | Lazy<typeof SvelteComponent>;

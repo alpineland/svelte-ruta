@@ -15,7 +15,7 @@ import { writable } from 'svelte/store';
 export const ROUTER_KEY = Symbol();
 
 /**
- * Retrieve the router provided via context of root component.
+ * Get the router provided via the context of a root component.
  * @returns {Router} router
  */
 export function get_router() {
@@ -90,10 +90,10 @@ export class Router {
    * @param {string} href
    * @param {boolean} replace false
    */
-  navigate(href, replace = false) {
+  async navigate(href, replace = false) {
     const url = new URL(href, 'http://a.a' + this.#base);
     href = url.pathname + url.search + url.hash;
-    const matched = this.#matcher.match(
+    const matched = await this.#matcher.match(
       href.replace(new RegExp('^' + this.#base), ''),
     );
     internal_route.set(matched);
