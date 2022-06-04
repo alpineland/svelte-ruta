@@ -8,11 +8,16 @@ type Lazy<T> = () => Promise<{ default: T }>;
  */
 export interface RouterOptions {
   /**
+   * The initial URL that router needs to navigate.
+   * This needs to be full URL.
+   */
+  url: string;
+  /**
    * List of routes to be added to the router.
    */
   routes: RouteRecord[];
   /**
-   * Optional base.
+   * Optional base URL segment. This has to start with `/`.
    *
    * @default undefined
    */

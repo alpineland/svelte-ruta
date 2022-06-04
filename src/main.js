@@ -2,6 +2,7 @@ import App from './App.svelte';
 import { ROUTER_KEY, Router } from './lib/mod.js';
 
 const router = new Router({
+  url: location.href,
   routes: [
     {
       pathname: '/',

@@ -1,6 +1,6 @@
-import { CLIENT } from './constants.js';
+import { CLIENT, DEV } from './constants.js';
 import { Matcher } from './matcher.js';
-import { normalize_base } from './utils.js';
+import { normalise_base } from './utils.js';
 import { getContext } from 'svelte';
 import { writable } from 'svelte/store';
 
@@ -32,15 +32,21 @@ export const internal_route = writable();
 export const route = { subscribe: internal_route.subscribe };
 
 export class Router {
-  #base;
+  #base_seg;
+  #base_url;
   #matcher;
   #scroll;
 
   /** @param {import('./types').RouterOptions} options */
   constructor(options) {
-    const { base, hash = false, routes, scroll } = options;
+    const { base, hash = false, routes, scroll, url } = options;
 
-    this.#base = normalize_base(base);
+    if (DEV) {
+      if (!url) throw new Error(`"url" is required in router options.`);
+      if (!routes) throw new Error(`"routes" is required in router options.`);
+    }
+
+    [this.#base_url, this.#base_seg] = normalise_base(url, base);
     this.#matcher = new Matcher(routes);
     this.#scroll = scroll;
 
@@ -82,8 +88,15 @@ export class Router {
         this.navigate(location.href),
       );
 
-      this.navigate(location.href);
+      this.navigate(url);
     }
+  }
+
+  /**
+   * Get the normalised base.
+   */
+  get base() {
+    return this.#base_seg;
   }
 
   /**
@@ -91,19 +104,16 @@ export class Router {
    * @param {boolean} replace false
    */
   async navigate(href, replace = false) {
-    const url = new URL(href, 'http://a.a' + this.#base);
-    href = url.pathname + url.search + url.hash;
-    const matched = await this.#matcher.match(
-      href.replace(new RegExp('^' + this.#base), ''),
-    );
+    const url = new URL(href, this.#base_url);
+    href = url.pathname.replace(this.#base_seg, '') + url.search + url.hash;
+    const matched = await this.#matcher.match(href, this.#base_url);
     internal_route.set(matched);
 
     if (CLIENT) {
-      if (replace) {
-        history.replaceState(null, '', href);
-      } else {
-        history.pushState(null, '', href);
-      }
+      const url = this.#base_url + href;
+      if (replace) history.replaceState(null, '', url);
+      else history.pushState(null, '', url);
+
       if (this.#scroll) this.#scroll();
       else scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }

@@ -14,8 +14,11 @@ export class Matcher {
     this.#make_routes(routes);
   }
 
-  /** @param {string} pathname */
-  async match(pathname) {
+  /**
+   * @param {string} pathname
+   * @param {string} base
+   */
+  async match(pathname, base) {
     for (const proute of this.#proutes) {
       const res = proute.pattern.exec({ pathname });
       if (res) {
@@ -25,7 +28,7 @@ export class Matcher {
           }
         }
         return {
-          url: new URL(pathname, 'http://a.a'),
+          url: new URL(pathname, base),
           params: res.pathname.groups,
           matched: [proute],
         };
@@ -54,11 +57,8 @@ export class Matcher {
         redirect_from,
       };
 
-      if (children?.length) {
-        this.#make_routes(children, parent);
-      } else {
-        this.#proutes.push(parent);
-      }
+      if (children?.length) this.#make_routes(children, parent);
+      else this.#proutes.push(parent);
     }
   }
 }
