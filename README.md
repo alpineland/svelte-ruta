@@ -1,5 +1,5 @@
 # svelte-ruta
 
-> Router (ルーター) for Svelte
+> Router for Svelte
 
 - [Source](https://github.com/alpineland/svelte-ruta)
