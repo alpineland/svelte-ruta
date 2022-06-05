@@ -85,7 +85,7 @@ export class Router {
       });
 
       addEventListener(hash ? 'hashchange' : 'popstate', () =>
-        this.navigate(location.href),
+        this.navigate(location.href, true),
       );
 
       this.navigate(url);
@@ -110,6 +110,7 @@ export class Router {
     internal_route.set(matched);
 
     if (CLIENT) {
+      history.scrollRestoration = 'manual';
       const url = this.#base_url + href;
       if (replace) history.replaceState(null, '', url);
       else history.pushState(null, '', url);
