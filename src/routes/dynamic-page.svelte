@@ -1,5 +1,5 @@
 <script>
-  import { route } from '../lib/mod.js';
+  import { route } from '~/lib/mod.js';
 </script>
 
 <main>

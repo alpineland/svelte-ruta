@@ -3,6 +3,9 @@
   "include": ["./src/**/*.js", "./src/**/*.ts", "./src/**/*.svelte"],
   "compilerOptions": {
     "moduleResolution": "node",
-    "types": ["vite/client", "svelte"]
+    "types": ["vite/client", "svelte"],
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   }
 }
