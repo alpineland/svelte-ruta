@@ -15,12 +15,12 @@ export class Matcher {
   }
 
   /**
-   * @param {string} pathname
+   * @param {string} url
    * @param {string} base
    */
-  async match(pathname, base) {
+  async match(url, base) {
     for (const proute of this.#proutes) {
-      const res = proute.pattern.exec({ pathname });
+      const res = proute.pattern.exec(url, base);
       if (res) {
         for (const [name, comp] of Object.entries(proute.components)) {
           if (typeof comp === 'function' && !('prototype' in comp)) {
@@ -28,7 +28,7 @@ export class Matcher {
           }
         }
         return {
-          url: new URL(pathname, base),
+          url: new URL(url, base),
           params: res.pathname.groups,
           matched: [proute],
         };

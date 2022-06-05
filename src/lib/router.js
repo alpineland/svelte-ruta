@@ -111,9 +111,9 @@ export class Router {
 
     if (CLIENT) {
       history.scrollRestoration = 'manual';
-      const url = this.#base_url + href;
-      if (replace) history.replaceState(null, '', url);
-      else history.pushState(null, '', url);
+      const h_url = this.#base_url + href;
+      if (replace) history.replaceState(null, '', h_url);
+      else history.pushState(null, '', h_url);
 
       if (this.#scroll) this.#scroll();
       else scrollTo({ top: 0, left: 0, behavior: 'smooth' });
