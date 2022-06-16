@@ -1,5 +1,5 @@
 {
-  "extends": "@ydcjeff/tsconfig/tsconfig.json",
+  "extends": "@ydcjeff/configs/tsconfig",
   "include": ["./src/**/*.js", "./src/**/*.ts", "./src/**/*.svelte"],
   "compilerOptions": {
     "moduleResolution": "node",
